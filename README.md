@@ -1,6 +1,13 @@
-# Wirtschaftssimulation: Vergleich dreier Wirtschaftssysteme
+# Wirtschaftssimulation: Freier Markt, Regelrahmen oder direkter Eingriff?
 
-Agentenbasierter Prototyp, der drei institutionelle Ordnungen auf **demselben Modellkern** vergleicht:
+Agentenbasiertes Makromodell, das drei Wirtschaftsordnungen auf **demselben Modellkern** vergleicht – mit Arbeits-, Güter- und Kreditmarkt, endogener Geldschöpfung und identischen Schocks.
+
+📄 **Ausarbeitung:** [`dokument/Wirtschaftssysteme_Simulation.pdf`](dokument/Wirtschaftssysteme_Simulation.pdf) (wissenschaftliche Arbeit mit Modellformeln, Ergebnissen und einer Einordnung der „Antifaschistischen Wirtschaftspolitik“; auch als [Word-Datei](dokument/Wirtschaftssysteme_Simulation.docx))
+📊 **Alle Kennzahlen:** [`ERGEBNISSE.md`](ERGEBNISSE.md)
+
+![Verläufe zentraler Kennzahlen](figures/01_zeitreihen.png)
+
+## Die Regime
 
 | Regime | Beschreibung |
 |---|---|
@@ -14,7 +21,7 @@ A wird in zwei Varianten gerechnet, weil „vollkommen frei“ zwei sinnvolle Le
 ## Schnellstart
 
 ```bash
-pip install numpy pandas matplotlib
+pip install -r requirements.txt
 python run_experiments.py --runs 30          # Hauptexperiment (≈ 4 s je Lauf und Kern)
 python run_experiments.py --sweep-only --sweep-runs 8   # Sensitivitätsläufe (abschnittsweise gespeichert, fortsetzbar)
 python analysis.py                           # Diagramme nach figures/, Tabelle ERGEBNISSE.md
@@ -40,6 +47,7 @@ ts.plot(x="t", y=["konsum_pk", "arbeitslosigkeit"])
 | `analysis.py` | Diagramme und Ergebnistabelle |
 | `results/` | Rohdaten: Zeitreihen, Kennzahlen je Lauf, Lorenzkurven, Sensitivität |
 | `figures/` | Erzeugte Diagramme |
+| `dokument/` | Wissenschaftliche Ausarbeitung (PDF und Word) |
 
 ## Modellbeschreibung (ODD-Kurzform)
 
@@ -75,7 +83,8 @@ ts.plot(x="t", y=["konsum_pk", "arbeitslosigkeit"])
 | Ausfall | Mit Rechtsdurchsetzung verwertet die Bank die gesamte Kasse, ohne nur 30 % (Rest „verschwindet“ zum Eigentümer). Unehrliche Firmen stellen ohne Durchsetzung zeitweise die Zahlungen absichtlich ein. |
 | Bankkapital | Kreditvolumen ≤ Eigenkapital / Mindestquote (A: 2 %, B/C: 8 %). B/C zusätzlich Großkreditgrenze 25 %. |
 | Krise | Eigenkapital < 0. Private Nachschüsse → staatliche Rettung (B/C) → Verlust der Einleger (Bail-in). |
-- *Schock:* Produktivitätseinbruch um 25 % in den Perioden 400–429, in allen Regimen identisch.
+
+**Schock:** Produktivitätseinbruch um 25 % in den Perioden 400–429, in allen Regimen identisch.
 
 ## Wie die Vergleichbarkeit gesichert wird
 
@@ -87,14 +96,13 @@ ts.plot(x="t", y=["konsum_pk", "arbeitslosigkeit"])
 - **Robustheitsprüfung:** Marktmacht, Betrugsneigung, Konsumverhalten und Preisanpassungstempo werden für alle Regime variiert. Eine Aussage gilt nur als belastbar, wenn die Rangfolge über die Achse hält.
 - **Kein Gesamtsieger:** Die Kennzahlen decken verschiedene Ziele ab; ihre Gewichtung ist normativ.
 
-## Hinweise zu den ersten Ergebnissen
+## Wichtigste Ergebnisse (Kurzfassung)
 
+- **Rechtsdurchsetzung** ist die wirkungsvollste einzelne Institution; der Vorsprung von A mit Eigentumsrechten hängt an schwacher Marktmacht. B verteilt am gleichmäßigsten und verkraftet den Schock am besten; C hat die geringste Einkommensungleichheit, aber dauerhaft ~12 % unbefriedigte Nachfrage.
 - **Kreditmarkt.** Ohne Rechtsdurchsetzung ist Kredit teurer, Ausfälle sind fast dreimal so hoch, und es kommt zu Bankenkrisen mit Einlegerverlusten. In C wirkt die Zinsobergrenze faktisch als Kreditsperre (99 % Ablehnungen). Die Eigenkapitalanforderung ist im untersuchten Bereich (2–16 %) in A mit Eigentumsrechten, B und C nicht bindend.
 - **Schockreaktion in C** hängt vor allem am preisindexierten Mindestlohn: Bei `min_wage_ratio <= 0.7` ist der Konsumverlust nicht größer als in B.
-
-- **Wechselwirkung Mindestlohn × Preisdeckel in C.** Der Mindestlohn ist an das Preisniveau gekoppelt. Liegt der erlaubte Aufschlag über ca. 25 %, ist der Mindestlohn (80 % von Preis × Produktivität) höher als der Lohn, den die Preise tragen: Bei jeder Indexierung steigen Löhne, dann Preise, dann wieder der Mindestlohn. Bei fester Geldmenge endet das in Massenarbeitslosigkeit (Sensitivitätslauf „Preisdeckel 0,4“). Derselbe Mechanismus erzeugt die Sägezahn-Einbrüche von C während des Produktivitätsschocks.
+- **Wechselwirkung Mindestlohn × Preisdeckel in C.** Der Mindestlohn ist an das Preisniveau gekoppelt. Bei lockerem Preisdeckel (Aufschlag ≥ 20 %) liegt er über dem Lohn, den die Preise tragen, und löst bei jeder Indexierung eine Lohn-Preis-Runde aus; derselbe Mechanismus erzeugt die stufenförmigen Einbrüche von C während des Produktivitätsschocks. In ruhigen Zeiten ist der Mindestlohn bis 0,85 kaum bindend.
 - **A ohne Rechtsdurchsetzung** erreicht bis Periode 600 kein Gleichgewicht: Ungleichheit und Arbeitslosigkeit steigen weiter. Für belastbare Niveaus längere Läufe rechnen (`periods`).
-- **Mindestlohn bis 0,85** ist bei den Standardparametern kaum bindend; Effekte zeigen sich erst darüber.
 
 ## Grenzen des Prototyps
 
@@ -108,3 +116,7 @@ Die Ergebnisse folgen aus den Annahmen – sie sind kein Beleg für oder gegen e
 Naheliegende Erweiterungen: mehrere Banken und Interbankenmarkt, Zentralbank mit Leitzins, Investitionen und Produktivitätswachstum (Innovation), Schwarzmärkte bei Preisdeckeln, Steuerhinterziehung, Kalibrierung an empirischen Daten (z. B. Arbeitslosigkeit, Lohnquote, Gini).
 
 Orientierung für die Modellbausteine: Delli Gatti et al. (2011) *Macroeconomics from the Bottom-up*; Dosi, Fagiolo & Roventini (2010) *Schumpeter meeting Keynes*; Grimm et al. (2020) zum ODD-Protokoll.
+
+## Lizenz
+
+Code und Daten stehen unter der MIT-Lizenz (siehe [`LICENSE`](LICENSE)). Die Ausarbeitung im Ordner `dokument/` steht unter [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de).
